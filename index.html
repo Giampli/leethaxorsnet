@@ -3,33 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terminal</title>
+<title>root@giampli</title>
 <style>
     body {
         margin: 0;
         padding: 0;
         background-color: #000;
-        color: #00ff00; /* Green text */
-        font-family: 'Consolas', monospace; /* Change to Consolas font */
+        color: #00ff00;
+        font-family: 'Consolas', monospace;
         font-size: 16px;
         line-height: 1.6;
         overflow: hidden;
     }
 
     .terminal {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
         padding: 10px;
-        white-space: pre-wrap;
+        white-space: nowrap; /* Prevent line wrapping */
+        overflow-x: auto; /* Allows scrolling horizontally if necessary */
+    }
+
+    input[type="email"] {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        color: #00ff00;
+        font-family: 'Consolas', monospace;
+        font-size: 16px;
+        width: 200px; /* Adjust width as needed */
+        /* Hide the blinking text cursor */
+        color: transparent; /* Makes text temporarily invisible for better cursor simulation */
+        text-shadow: 0 0 0 #00ff00; /* Restores visible text coloring */
     }
 
     .cursor {
         display: inline-block;
-        width: 7px; /* Adjust the width as needed */
+        width: 7px;
         height: 16px;
-        color: #00ff00; /* Green color */
+        color: #00ff00; /* Solid green block */
         animation: blink 1.25s step-end infinite;
     }
 
@@ -42,14 +52,62 @@
 </head>
 <body>
     <div class="terminal" id="terminal">
-        root@giampli:~$<span id="cursor" class="cursor">█</div>
+        root@giampli:~$ 
+        <form action="https://formspree.io/f/xqkrgeek" method="POST" id="emailForm" style="display: inline;">
+            <span class="cursor">█</span>
+            <input class="emailaddress" type="email" name="email" placeholder="Enter your email" required>
+            <input type="submit" style="display: none;"> <!-- Hidden submit button -->
+        </form>
     </div>
 
     <script>
-        // JavaScript to focus the cursor on page load
         document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('cursor').focus();
+            const form = document.getElementById('emailForm');
+            let isSubmitted = false;  // Flag to check if the form has been submitted
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                // Check if the form has already been submitted
+                if (isSubmitted) {
+                    alert('The form has already been submitted.');
+                    return; // Prevent the form from submitting again
+                }
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert('Email submitted successfully!');
+                        form.reset(); // Reset the form after successful submission
+                        isSubmitted = true; // Set the flag as true after successful submission
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
+                })
+                .catch(error => alert('An error occurred. Please try again.'));
+            });
+
+            const input = document.querySelector('input[type="email"]');
+            input.focus(); // Focus on the email input automatically
+            input.addEventListener('input', function() {
+                // Hide the block cursor when typing
+                document.querySelector('.cursor').style.display = input.value ? 'none' : 'inline-block';
+                document.querySelector('.emailaddress').style.color = input.value ? '#00ff00' : 'transparent';
+                document.querySelector('.emailaddress').style.textShadow = input.value ? '0 0 0 transparent' : '0 0 0 #00ff00';
+            });
         });
     </script>
 </body>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7YHLRKE3H5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7YHLRKE3H5');
+</script>
 </html>
